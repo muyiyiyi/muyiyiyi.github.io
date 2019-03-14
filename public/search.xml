@@ -12,17 +12,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[测试]]></title>
-    <url>%2F2019%2F03%2F14%2F%E6%B5%8B%E8%AF%95%2F</url>
-    <content type="text"><![CDATA[博客测试]]></content>
-      <categories>
-        <category>随记</category>
-      </categories>
-      <tags>
-        <tag>nothing</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[木易的博客]]></title>
     <url>%2F2019%2F03%2F14%2F%E6%9C%A8%E6%98%93%E7%9A%84%E5%8D%9A%E5%AE%A2%2F</url>
     <content type="text"></content>
@@ -43,13 +32,13 @@
     <content type="text"></content>
   </entry>
   <entry>
-    <title><![CDATA[Tag cloud]]></title>
-    <url>%2Ftags%2Findex.html</url>
+    <title><![CDATA[categories]]></title>
+    <url>%2Fcategories%2Findex.html</url>
     <content type="text"></content>
   </entry>
   <entry>
-    <title><![CDATA[categories]]></title>
-    <url>%2Fcategories%2Findex.html</url>
+    <title><![CDATA[Tag cloud]]></title>
+    <url>%2Ftags%2Findex.html</url>
     <content type="text"></content>
   </entry>
 </search>
