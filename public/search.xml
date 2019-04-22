@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[【长期更新】日常遇到的坑]]></title>
+    <url>%2F2019%2F04%2F22%2F%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[偶尔遇到的小问题 numpy 和 cv2 的几个尺寸变换resize 和 reshape123456789101112import numpy as npimport cv2img = cv2.imread(img_path) # 实际上是一个np.arrayresized_img1 = cv2.resize(img,(500,500)) #直接修改数组尺寸 这个函数有返回值 不会修改原来的img 因此需要赋给新的变量 但是，！！！只需要指明宽和高，3通道不用注明resized_img2 = np.resize(img,(500,500,3)) # 这个函数有返回值 不会修改原来的img 如果是三通道图片要 指明宽高和通道数 因为他是将整个数组resizeresized_img3 = img.resize(500,500,3) #这个对象内置方法需要指明通道 但是 resized_img3 是空值 它没有返回值 所以直接 img.resize即可 resized_img4 = img.reshape((50,50,3)) # 这个操作不会改变原来的数组img reshape是在原有数组操作，因此总共的元素个数不能变，比如原来 100*100*3 reshape后的 m*n*k*l也必须等于那么多resized_img5 = np.reshape(img,(50,50,3)) #和上面的一样 ==总之，改变图像大小cv2.resize(img,(width,height))即可== PIL 和 cv2==读取图片==12345from PIL import Imageimport cv2img = Image.open(img_path) #PIL读取的，返回的img是一个对象，如 JPEG对象img = cv2.imread(img_path,0) #cv2 读取的，返回的img是一个np.array数组 第二个参数表示读取模式，0表示灰度图，默认是3通道的RGB # cv2 的一个沙雕(我觉得)机制，imread读取失败不会报错，而是 img 变成Nonetype的对象，后续使用才能发现读取失败 ==裁剪操作== ​ 图1 图像的像素坐标系X-Y 12345678# 图像坐标系 都是以图像的左上角为原点，x向右，y向下的像素坐标系 # PIL 的裁剪，剪出上图所示的红色矩形框内容 内置方法crop即可 ，传入裁剪区域左上角和右下角坐标crop_img = img.crop(xmin , ymin ,xmax ,ymax) # cv2 的裁剪 ，通常使用 数组的切片操作crop_img = img[ ymin:ymax , xmin:xmax] # 注意坐标的顺序即可，以及不需要通道[x1:x2,y1:y2,:]这种切片# 给cv2.的指定位置(x,y)赋值，RGB像素赋值的方法是 img[x,y,:] = (r,g,b) 或者 img[x,y] = color ，color是一个数字]]></content>
+      <tags>
+        <tag>coding</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[hexo搭建个人博客]]></title>
     <url>%2F2019%2F03%2F15%2F%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2%2F</url>
     <content type="text"><![CDATA[我的第一篇博客，记录使用hexo搭建博客的过程。 Hexo 是一个基于node.js的静态博客框架，使用Markdown解析文章，具有速度快，搭建方便等特点。我的环境：Windows x64node.js v10.15.2git v2.19.1 安装Node.js 和 gitNode.js https://nodejs.org/en/ 傻瓜式next安装即可git https://git-scm.com/download/win 选择对应版本安装即可 安装hexo选择一个目录存放，命令行打开 我的安装目录是 E:myblogfile 1npm install hexo-cli -g start1234hexo init blog #初始化博客 然后会在当前目录下生成一个blog（可以是任意名）文件夹cd blog #进入博客文件夹npm installhexo server # 打开本地服务 浏览器打开 http://localhost:4000/ 能够正确打开即可 博客文件结构blog文件夹下的几个重要目录/文件 public ：hexo generate命令，输出的静态网页内容目录（通常不需要修改）deploy ：执行hexo deploy命令部署到GitHub上的内容目录source ：存放菜单的各个项目（tags、categories自己创建）、草稿（drafts）、已发布文章（posts)theme ：主题目录，默认主题landscape，自己下载的主题放在这里_config.yml ：站点配置文件，网站名称，副标题，描述，作者，语言，主题，部署等等参数。这个文件下面会做较为详细的介绍。 站点配置###Github 创建仓库在github上创建新的Repository（没有github账号请创建）,名字为&lt;blog name&gt;.github.io当然 blog name任意。Description处选填,勾选Pubic,Readme随意 修改blog文件夹下的_congfig.yml文件打开配置文件，搜索deploy，修改参数，注意参数后的冒号:和值中间要用空格隔开 1234deploy: type: git repository: https://github.com/&lt;github账号名&gt;/&lt;blog name&gt;.github.io.git #就是仓库的网址后加上 .git branch: master cmd指令保存后，在博客文件下进入cmd（tips:在目录下ctrl+shift同时鼠标右键，即可在此处打开命令行，如果右键没有添加打开cmd的快捷指令，避免使用cd切换） 12E:\myblogflie\blog&gt;npm install hexo-deployer-git --save E:\myblogfile\blog&gt;hexo d -g tips：第一个npm指令可能速度很慢，可以先翻墙然后执行该指令hexo d -g 部署到github，（-g生成静态文件），中途会跳出界面提示登录github账号最后出现INFO Deploy done: git就代表部署成功，可以进入github自己的仓库查看 配置github.io进入github中的博客仓库，点击settings页面拉到最下方GitHub Pages 可以看到 Your site is published at https://blogname.github.io 如上图所示，由于我绑定了自己的域名，因此显示的是新的域名http://www.muyimuyi.xyz/ 下方的Custom domain就是选择绑定的域名，如果不绑定就不需要填写。 https://blogname.github.io就是博客位置，可以点击访问查看博客信息 写文章和发布使用hexo new 文章名在blog文件夹下进入cmd，使用hexo new blogname 发布一篇名叫blogname的文章 使用 hexo adminhexo-admin是一款在线可视化发布文章的插件，可以选择文章的tag category 点击publish按钮即可，同时posts文件夹下面出现该md文件安装方法如下，在blog文件夹进入cmd 123npm install --save hexo-admin #安装hexo-adminhexo server -dopen http://localhost:4000/admin/ #或者在浏览器中打开该网址 打开后界面如下 或者 直接在本地书写md文件，放在post目录下即可写完文章后，部署。写完文章使用 hexo s --debug进行调试，查看效果，可以及时检查效果。确认无误后可以依次使用清除、生成静态文件、部署的指令 123hexo clean hexo g hexo d 主题的修改 特色功能添加 我使用的是next主题，该主题地址 Next该主题的修改，功能添加，网上很多教程，自己搜索即可。。。。。。。]]></content>
@@ -12,19 +20,13 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Hello World]]></title>
-    <url>%2F2019%2F03%2F13%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
-      <categories>
-        <category>useless</category>
-      </categories>
-      <tags>
-        <tag>system</tag>
-      </tags>
-  </entry>
-  <entry>
     <title></title>
     <url>%2Farchives%2Findex.html</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[about]]></title>
+    <url>%2Fabout%2Findex.html</url>
     <content type="text"></content>
   </entry>
   <entry>
@@ -35,11 +37,6 @@
   <entry>
     <title><![CDATA[Tag cloud]]></title>
     <url>%2Ftags%2Findex.html</url>
-    <content type="text"></content>
-  </entry>
-  <entry>
-    <title><![CDATA[about]]></title>
-    <url>%2Fabout%2Findex.html</url>
     <content type="text"></content>
   </entry>
 </search>
