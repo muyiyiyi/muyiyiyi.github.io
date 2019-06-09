@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="opencv学习笔记（一）图像视频读写">
+<meta name="keywords" content="opencv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenCV 4.0 Notes (一) 图像与视频的读写">
+<meta property="og:url" content="http://www.muyimuyi.xyz/2019/06/09/笔记(一) - 图像视频的读写与显示/index.html">
+<meta property="og:site_name" content="muyiyiyiyi">
+<meta property="og:description" content="opencv学习笔记（一）图像视频读写">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.muyimuyi.xyz/images/9.png">
+<meta property="og:image" content="http://www.muyimuyi.xyz/images/10.png">
+<meta property="og:updated_time" content="2019-06-09T15:07:43.938Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenCV 4.0 Notes (一) 图像与视频的读写">
+<meta name="twitter:description" content="opencv学习笔记（一）图像视频读写">
+<meta name="twitter:image" content="http://www.muyimuyi.xyz/images/9.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://www.muyimuyi.xyz/2019/06/09/笔记(一) - 图像视频的读写与显示/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>OpenCV 4.0 Notes (一) 图像与视频的读写 | muyiyiyiyi</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">muyiyiyiyi</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags" rel="section"><i class="menu-item-icon fa fa-fw fa-tag"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+  <a href="https://github.com/muyiyiyi" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.muyimuyi.xyz/2019/06/09/笔记(一) - 图像视频的读写与显示/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="muyiyiyi">
+      <meta itemprop="description" content="世间好物不监牢,彩云易散琉璃脆.">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="muyiyiyiyi">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">OpenCV 4.0 Notes (一) 图像与视频的读写
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-09 20:34:54 / 修改时间：23:07:43" itemprop="dateCreated datePublished" datetime="2019-06-09T20:34:54+08:00">2019-06-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习笔记/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/06/09/笔记(一) - 图像视频的读写与显示/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/06/09/笔记(一) - 图像视频的读写与显示/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2019/06/09/笔记(一) - 图像视频的读写与显示/" class="leancloud_visitors" data-flag-title="OpenCV 4.0 Notes (一) 图像与视频的读写">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>opencv学习笔记（一）图像视频读写</p>
+<a id="more"></a>
+<h1 id="读取图片"><a href="#读取图片" class="headerlink" title="读取图片"></a>读取图片</h1><p>[==文档地址==][<a href="https://docs.opencv.org/4.0.0/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56]" target="_blank" rel="noopener">https://docs.opencv.org/4.0.0/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56]</a> </p>
+<h2 id="imread方法"><a href="#imread方法" class="headerlink" title="imread方法"></a>imread方法</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Mat <span class="title">imread</span><span class="params">(<span class="keyword">const</span> String &amp; filename ,<span class="keyword">int</span> flags=IMREAD_COLOR)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>imread读取图像，返回Mat对象，两个参数，第一个是文件名，支持位图bmp、dib，JPEG图像，PNG，webp，pbm，pgm,ppm,TIFF等多种图像，读取失败则返回空矩阵 </p>
+<p>第二个读取方式，默认值是1 flag = 1  返回三通道彩色图    flag = 0 灰度图   flag = -1 原图带alpha通道</p>
+<p>如果返回三通道，编码顺序是BGR。支持读取的图像格式如下</p>
+<blockquote>
+<p>Currently, the following file formats are supported:</p>
+<ul>
+<li>Windows bitmaps - <em>.bmp, </em>.dib (always supported)</li>
+<li>JPEG files - <em>.jpeg, </em>.jpg, <em>.jpe (see the </em>Note* section)</li>
+<li>JPEG 2000 files - <em>.jp2 (see the </em>Note* section)</li>
+<li>Portable Network Graphics - <em>.png (see the </em>Note* section)</li>
+<li>WebP - <em>.webp (see the </em>Note* section)</li>
+<li>Portable image format - <em>.pbm, </em>.pgm, <em>.ppm </em>.pxm, *.pnm (always supported)</li>
+<li>Sun rasters - <em>.sr, </em>.ras (always supported)</li>
+<li>TIFF files - <em>.tiff, </em>.tif (see the <em>Note</em> section)</li>
+<li>OpenEXR Image files - <em>.exr (see the </em>Note* section)</li>
+<li>Radiance HDR - <em>.hdr, </em>.pic (always supported)</li>
+<li>Raster and Vector geospatial data supported by GDAL (see the <em>Note</em> section)</li>
+</ul>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 图片路径 可以是/或者//或者\\或者 /、//、\\混合；但不能是单独的反斜杠 \</span></span><br><span class="line">	Mat src = imread(<span class="string">"C:/Users/muyi/Pictures/pic/5503.jpg"</span>);</span><br><span class="line">	imshow(<span class="string">"input"</span>, src);</span><br><span class="line">	waitKey(<span class="number">0</span>);</span><br><span class="line">	destroyAllWindows();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">img = cv2.imread(filename,flags)  <span class="comment"># 返回array矩阵，读取失败则是nonetype</span></span><br></pre></td></tr></table></figure>
+<h2 id="图片读取出错处理"><a href="#图片读取出错处理" class="headerlink" title="图片读取出错处理"></a>图片读取出错处理</h2><p>文件损坏、不存在、权限错误等问题导致读取图片失败，程序==不会报错==，但是返回的是空矩阵，不处理后续使用可能会出错。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Mat src = imread(<span class="string">"test.png"</span>);</span><br><span class="line"><span class="keyword">if</span> (src.empty()) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"could not load image...\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">src = cv2.imread(<span class="string">"test.png"</span>)</span><br><span class="line"><span class="comment"># 断言判断读取是否成功</span></span><br><span class="line"><span class="keyword">assert</span> type(src)==<span class="literal">None</span>,<span class="string">"load image error"</span></span><br><span class="line"><span class="comment"># 或者if语句判断</span></span><br><span class="line"><span class="keyword">if</span> src.all() == <span class="literal">None</span>:  <span class="comment">#</span></span><br><span class="line">    print(<span class="string">"load image error"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者 try,自定义异常</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_img</span><span class="params">(path)</span>:</span></span><br><span class="line">    img = cv2.imread(path)</span><br><span class="line">    <span class="keyword">if</span> img == <span class="literal">None</span>:   <span class="comment"># 用type(img)==None 无效</span></span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">"load image error"</span>)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"><span class="keyword">try</span> :</span><br><span class="line">    read_img(<span class="string">'eee.png'</span>)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> err:</span><br><span class="line">    print(err)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    后续处理</span><br></pre></td></tr></table></figure>
+<h2 id="读取的图片属性"><a href="#读取的图片属性" class="headerlink" title="读取的图片属性"></a>读取的图片属性</h2><p>==C++版本，读取图像以Mat类形式存储，Python版本以np.array形式存储==</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Mat img = imread(<span class="string">"C:\Users\muyi\Pictures\pic\5503.jpg"</span>);</span><br><span class="line"><span class="comment">// Mat类的部分属性</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"dims:"</span> &lt;&lt; img.dims &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 矩阵的维度</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"rows:"</span> &lt;&lt; img.rows &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 矩阵的行数</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"cols:"</span> &lt;&lt; img.cols &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 矩阵列数</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"channels:"</span> &lt;&lt; img.channels() &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 图像通道数</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"type:"</span> &lt;&lt; img.type() &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 表示了矩阵中元素的类型以及矩阵的通道个数</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"depth:"</span> &lt;&lt; img.depth() &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 深度</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"elemSize:"</span> &lt;&lt; img.elemSize() &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 矩阵一个元素占用的字节数</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"elemSize1:"</span> &lt;&lt; img.elemSize1() &lt;&lt; <span class="built_in">endl</span>; <span class="comment">//矩阵元素一个通道占用的字节数= elemSize / channels</span></span><br><span class="line"><span class="comment">// type为 CV_16SC3，那么elemSize = 3 * 16 / 8 = 6 bytes</span></span><br></pre></td></tr></table></figure>
+<p>图像矩阵的type取值：[参考博客]<a href="https://blog.csdn.net/zang141588761/article/details/50340709" target="_blank" rel="noopener">https://blog.csdn.net/zang141588761/article/details/50340709</a></p>
+<p>它是一系列的预定义的常量，其命名规则为CV_(位数）+（数据类型）+（通道数）U（unsigned integer）表示的是无符号整数，S（signed integer）是有符号整数，F（float）是浮点数。  C1，C2，C3，C4则表示通道是1,2,3,4  </p>
+<p>==type一般是在创建Mat对象时设定==，如果要取得Mat的元素类型，则无需使用type，使用depth</p>
+<p>depth 矩阵中元素的一个通道的数据类型，这个值和type是相关的。例如 type为 CV_16SC2，一个2通道的16位的有符号整数。那么，depth则是CV_16S。depth也是一系列的预定义值，<br>将type的预定义值去掉通道信息就是depth值:   CV_8U CV_8S CV_16U CV_16S CV_32S CV_32F CV_64F</p>
+<p>表1. Mat对象type的取值表</p>
+<table>
+<thead>
+<tr>
+<th>CV_8UC1</th>
+<th>CV_8UC2</th>
+<th>CV_8UC3</th>
+<th>CV_8UC4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CV_8SC1</td>
+<td>CV_8SC2</td>
+<td>CV_8SC3</td>
+<td>CV_8SC4</td>
+</tr>
+<tr>
+<td>CV_16UC1</td>
+<td>CV_16UC2</td>
+<td>CV_16UC3</td>
+<td>CV_16UC4</td>
+</tr>
+<tr>
+<td>CV_16SC1</td>
+<td>CV_16SC2</td>
+<td>CV_16SC3</td>
+<td>CV_16SC4</td>
+</tr>
+<tr>
+<td>CV_32SC1</td>
+<td>CV_32SC2</td>
+<td>CV_32SC3</td>
+<td>CV_32SC4</td>
+</tr>
+<tr>
+<td>CV_32FC1</td>
+<td>CV_32FC2</td>
+<td>CV_32FC3</td>
+<td>CV_32FC4</td>
+</tr>
+<tr>
+<td>CV_64FC1</td>
+<td>CV_64FC2</td>
+<td>CV_64FC3</td>
+<td>CV_64FC4</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Mat <span class="title">img</span><span class="params">(<span class="number">3</span>, <span class="number">4</span>, CV_16UC4, Scalar_&lt;uchar&gt;(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>))</span></span>;<span class="comment">//3X4的矩阵 16位无符号4通道</span></span><br><span class="line"><span class="comment">//Scalar_是一个模板向量，用来初始化矩阵的每个像素，因为矩阵具有4个通道，Scalar_有四个值。</span></span><br></pre></td></tr></table></figure>
+<p>python版本cv图像格式，type(img) = numpy.ndarray 因此，它具有array的一切属性和方法，而不同于c++版本中Mat的deepth()、type()等写法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">"test.png"</span>)</span><br><span class="line">print(img.shape) <span class="comment"># [M,N,K] 行 列 通道数</span></span><br><span class="line">print(img.size) <span class="comment"># M*N*K</span></span><br><span class="line"><span class="comment"># 一些特殊方法</span></span><br><span class="line">print(img.mean()) <span class="comment">#平均值 img.sum() 元素和 std()标准差 等等</span></span><br><span class="line">img = img.flatten()</span><br><span class="line">img = img.ravel()</span><br><span class="line">img = img.reshape()</span><br></pre></td></tr></table></figure>
+<h1 id="写入图片"><a href="#写入图片" class="headerlink" title="写入图片"></a>写入图片</h1><p>[==文档地址==][<a href="https://docs.opencv.org/4.0.0/d4/da8/group__imgcodecs.html#gabbc7ef1aa2edfaa87772f1202d67e0ce]" target="_blank" rel="noopener">https://docs.opencv.org/4.0.0/d4/da8/group__imgcodecs.html#gabbc7ef1aa2edfaa87772f1202d67e0ce]</a></p>
+<h2 id="imwrite方法"><a href="#imwrite方法" class="headerlink" title="imwrite方法"></a>imwrite方法</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> cv::imwrite(<span class="keyword">const</span> String &amp; filename, InputArray img , <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp;params = <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retval = cv2.imwrite(filename, img[, params])</span><br></pre></td></tr></table></figure>
+<p>支持写入的图像格式与imread一致。8位单通道或3通道BGR编码数据才可以使用该函数。</p>
+<p>16位无符号图像数据，可以保存为PNG, JPEG2000 和TIFF</p>
+<p>32位浮点图像数据，可以保存为TIFF，OpenEXR，Radiance HDR格式</p>
+<p>3通道32位浮点图像数据被保存TIFF格式，则存储为高动态范围图像（High-Dynamic Range，HDR），每个像素4字节</p>
+<p>8位带透明度的PNG图像保存时需要创建第四个通道，最终数据格式是BGRA</p>
+<p>==对于非上述类型数据，可以通过mat.convertTo函数进行转换，然后写入图像文件==</p>
+<blockquote>
+<p>In general, only 8-bit single-channel or 3-channel (with ‘BGR’ channel order) images can be saved using this function</p>
+<ul>
+<li>16-bit unsigned (CV_16U) images can be saved in the case of PNG, JPEG 2000, and TIFF formats</li>
+<li>32-bit float (CV_32F) images can be saved in TIFF, OpenEXR, and Radiance HDR formats; 3-channel (CV_32FC3) TIFF images will be saved using the LogLuv high dynamic range encoding (4 bytes per pixel)</li>
+<li>PNG images with an alpha channel can be saved using this function. To do this, create 8-bit (or 16-bit) 4-channel image BGRA, where the alpha channel goes last. Fully transparent pixels should have alpha set to 0, fully opaque pixels should have alpha set to 255/65535 (see the code sample below).</li>
+</ul>
+</blockquote>
+<h2 id="带透明度的png图像"><a href="#带透明度的png图像" class="headerlink" title="带透明度的png图像"></a>带透明度的png图像</h2><p>c++源码，创建带透明度的PNG图像。(出自cv文档imwrite函数说明)</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/imgcodecs.hpp&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">createAlphaMat</span><span class="params">(Mat &amp;mat)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CV_Assert(mat.channels() == <span class="number">4</span>); <span class="comment">// 等同于c++里面的assert,条件为false返回错误信息</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; mat.rows; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; mat.cols; ++j)</span><br><span class="line">        &#123;  <span class="comment">// 行列遍历进行赋值  Vec是OpenCV定义的向量模板类</span></span><br><span class="line">            Vec4b&amp; bgra = mat.at&lt;Vec4b&gt;(i, j);</span><br><span class="line">            bgra[<span class="number">0</span>] = UCHAR_MAX; <span class="comment">// Blue define UCHAR_MAX 0xff </span></span><br><span class="line">            bgra[<span class="number">1</span>] = saturate_cast&lt;uchar&gt;((<span class="keyword">float</span> (mat.cols - j)) / ((<span class="keyword">float</span>)mat.cols) * UCHAR_MAX); <span class="comment">// Green  saturate_cast&lt;unchar&gt;是一个防止颜色操作溢出的函数，数据小于0置0；大于255置255</span></span><br><span class="line">            bgra[<span class="number">2</span>] = saturate_cast&lt;uchar&gt;((<span class="keyword">float</span> (mat.rows - i)) / ((<span class="keyword">float</span>)mat.rows) * UCHAR_MAX); <span class="comment">// Red</span></span><br><span class="line">            bgra[<span class="number">3</span>] = saturate_cast&lt;uchar&gt;(<span class="number">0.5</span> * (bgra[<span class="number">1</span>] + bgra[<span class="number">2</span>])); <span class="comment">// Alpha</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Create mat with alpha channel</span></span><br><span class="line">    <span class="function">Mat <span class="title">mat</span><span class="params">(<span class="number">480</span>, <span class="number">640</span>, CV_8UC4)</span></span>;</span><br><span class="line">    createAlphaMat(mat); <span class="comment">// 创建矩阵数据</span></span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; compression_params;</span><br><span class="line">    compression_params.push_back(IMWRITE_PNG_COMPRESSION); <span class="comment">// 枚举值16</span></span><br><span class="line">    compression_params.push_back(<span class="number">9</span>);</span><br><span class="line">    <span class="keyword">bool</span> result = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        result = imwrite(<span class="string">"alpha.png"</span>, mat, compression_params);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (<span class="keyword">const</span> cv::Exception&amp; ex)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"Exception converting image to PNG format: %s\n"</span>, ex.what());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (result)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Saved PNG file with alpha data.\n"</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"ERROR: Can't save PNG file.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> result ? <span class="number">0</span> : <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>python实现上述功能</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">img = np.zeros((<span class="number">480</span>,<span class="number">640</span>,<span class="number">4</span>),np.float)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">saturate</span><span class="params">(num)</span>:</span>  <span class="comment">## 不清楚cv2防止颜色溢出函数，因此自定义即可</span></span><br><span class="line">    <span class="keyword">if</span> num &gt;<span class="number">255.0</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">255.0</span></span><br><span class="line">    <span class="keyword">if</span> num &lt;<span class="number">0.0</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> num</span><br><span class="line">rows = img.shape[<span class="number">0</span>]</span><br><span class="line">cols = img.shape[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">        temp = img[i][j] <span class="comment"># 像素[i][j]位置的四个通道数据</span></span><br><span class="line">        temp[<span class="number">0</span>] = <span class="number">0xff</span></span><br><span class="line">        temp[<span class="number">1</span>] = saturate((cols-j)/rows*<span class="number">255.0</span>)</span><br><span class="line">        temp[<span class="number">2</span>] = saturate((rows-j) /cols *<span class="number">255.0</span>)</span><br><span class="line">        temp[<span class="number">3</span>] = saturate(temp[<span class="number">2</span>]+temp[<span class="number">1</span>])  <span class="comment">#可以看到不同透明度，显示效果不一样</span></span><br><span class="line">cv2.imwrite(<span class="string">'alpha.png'</span>,img)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/9.png" alt="1559393771424"></p>
+<h1 id="读取视频"><a href="#读取视频" class="headerlink" title="读取视频"></a>读取视频</h1><p>videoCapture结构体，可以读取文件视频、网页视频流和摄像头的数据。</p>
+<p>[文档地址][<a href="https://docs.opencv.org/4.0.0/d8/dfe/classcv_1_1VideoCapture.html#a57c0e81e83e60f36c83027dc2a188e80]" target="_blank" rel="noopener">https://docs.opencv.org/4.0.0/d8/dfe/classcv_1_1VideoCapture.html#a57c0e81e83e60f36c83027dc2a188e80]</a></p>
+<h2 id="capture结构体"><a href="#capture结构体" class="headerlink" title="capture结构体"></a>capture结构体</h2><p>函数原型 ==VideoCapture (const String &amp;filename, int apiPreference=CAP_ANY)==</p>
+<p>==cv2.VideoCapture(filename[, apiPreference])==</p>
+<p>Opens a video file or a capturing device or an IP video stream for video capturing with API Preference</p>
+<p>第一个参数是数据流或视频路径，第二个是API设置，读取的摄像头编号，默认CAP_ANY=0,自动检测摄像头。多个摄像头时，使用索引0,1,2，…进行编号调用摄像头。 apiPreference = -1时单独出现窗口，选取相应编号摄像头</p>
+<p>通常使用 ==bool isOpened()==判断是否打开视频或摄像头成功。</p>
+<h2 id="下一帧与释放"><a href="#下一帧与释放" class="headerlink" title="下一帧与释放"></a>下一帧与释放</h2><p>cap &gt;&gt; frame或者 ==cap.read(frame)==读取下一帧，函数定义是CV_WRAP virtual bool read(OutputArray image);读取帧失败会返回布尔值false，因此可以进行判断</p>
+<p>==视频帧读取的 read 、grab 、retrieve三种方式==：</p>
+<p>retrieve速度比grab慢很多，有时可以通过grab跳过不需要的帧，而不需要用read解码每一帧。</p>
+<ol>
+<li>cap.read(frame)  结合grab和retrieve的功能，抓取下一帧并解码</li>
+<li>cap.grap() 从设备或视频获取下一帧，获取成功返回true否则false</li>
+<li>cap.retrieve(frame) 在grab后使用，对获取到的帧进行解码，也返回true或false</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">char</span>**)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Mat frame; <span class="comment">//定义帧</span></span><br><span class="line">	VideoCapture cap;</span><br><span class="line">	<span class="keyword">int</span> deviceID = <span class="number">0</span>;             <span class="comment">// 0 = open default camera</span></span><br><span class="line">	<span class="keyword">int</span> apiID = cv::CAP_ANY;      <span class="comment">// 0 = autodetect default API</span></span><br><span class="line">    </span><br><span class="line">	cap.open(deviceID + apiID);  <span class="comment">//打开摄像头</span></span><br><span class="line">	<span class="comment">// check if we succeeded</span></span><br><span class="line">	<span class="keyword">if</span> (!cap.isOpened()) &#123;</span><br><span class="line">		<span class="built_in">cerr</span> &lt;&lt; <span class="string">"ERROR! Unable to open camera\n"</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//--- GRAB AND WRITE LOOP</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"Start grabbing"</span> &lt;&lt; <span class="built_in">endl</span></span><br><span class="line">		&lt;&lt; <span class="string">"Press any key to terminate"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="keyword">for</span> (;;)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// wait for a new frame from camera and store it into 'frame'</span></span><br><span class="line">		cap.read(frame);  <span class="comment">//读取下一帧，并可以返回读取成功与否</span></span><br><span class="line">        <span class="comment">//等价于 cap &gt;&gt; frame 同时等价于 cap.grab();cap.retrieve(frame);</span></span><br><span class="line">		<span class="keyword">if</span> (frame.empty()) &#123;</span><br><span class="line">			<span class="built_in">cerr</span> &lt;&lt; <span class="string">"ERROR! blank frame grabbed\n"</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		imshow(<span class="string">"Live"</span>, frame);</span><br><span class="line">		<span class="keyword">if</span> (waitKey(<span class="number">100</span>) &gt;= <span class="number">0</span>)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// the camera will be deinitialized automatically in VideoCapture destructor</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">cap = cv2.VideoCapture(<span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> cap.isOpened():</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        ret, prev = cap.read()  <span class="comment"># ret是读取状态，prev下一帧</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        等价于</span></span><br><span class="line"><span class="string">       if cap.grab():</span></span><br><span class="line"><span class="string">        	ret, prev = cap.retrieve()</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> ret==<span class="literal">True</span>:</span><br><span class="line">            cv2.imshow(<span class="string">'video'</span>, prev)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">if</span> cv2.waitKey(<span class="number">20</span>)==<span class="number">27</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
+<p>release()在使用完后进行手动释放capture对象</p>
+<h2 id="读取视频属性-get-方法"><a href="#读取视频属性-get-方法" class="headerlink" title="读取视频属性 get()方法"></a>读取视频属性 get()方法</h2><p>函数原型：==double cv::VideoCapture::get(int  propId)==</p>
+<p>==retval=cv2.VideoCapture.get(propId)==</p>
+<p>cv2.VideoCapture.get(0)     视频文件的当前位置（播放）以毫秒为单位<br>cv2.VideoCapture.get(1)     基于以0开始的被捕获或解码的帧索引<br>cv2.VideoCapture.get(2)     视频文件的相对位置（播放）：0=电影开始，1=影片的结尾。<br>cv2.VideoCapture.get(3)     在视频流的帧的宽度<br>cv2.VideoCapture.get(4)     在视频流的帧的高度<br>cv2.VideoCapture.get(5)     帧速率<br>cv2.VideoCapture.get(6)     编解码的4字-字符代码<br>cv2.VideoCapture.get(7)     视频文件中的帧数<br>cv2.VideoCapture.get(8)     返回对象的格式<br>cv2.VideoCapture.get(9)     返回后端特定的值，该值指示当前捕获模式<br>cv2.VideoCapture.get(10)     图像的亮度(仅适用于照相机)<br>cv2.VideoCapture.get(11)     图像的对比度(仅适用于照相机)<br>cv2.VideoCapture.get(12)     图像的饱和度(仅适用于照相机)<br>cv2.VideoCapture.get(13)     色调图像(仅适用于照相机)<br>cv2.VideoCapture.get(14)     图像增益(仅适用于照相机)（Gain在摄影中表示白平衡提升）<br>cv2.VideoCapture.get(15)     曝光(仅适用于照相机)<br>cv2.VideoCapture.get(16)     指示是否应将图像转换为RGB布尔标志<br>cv2.VideoCapture.get(17)     × 暂时不支持<br>cv2.VideoCapture.get(18)     立体摄像机的矫正标注（目前只有DC1394 v.2.x后端支持这个功能）</p>
+<h1 id="写入视频"><a href="#写入视频" class="headerlink" title="写入视频"></a>写入视频</h1><p>函数文档<a href="https://docs.opencv.org/4.0.0/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5" target="_blank" rel="noopener">https://docs.opencv.org/4.0.0/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5</a></p>
+<h2 id="VideoWriter类"><a href="#VideoWriter类" class="headerlink" title="VideoWriter类"></a>VideoWriter类</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv::VideoWriter::VideoWriter(<span class="keyword">const</span> String &amp; filename,<span class="keyword">int</span> fourcc,<span class="keyword">double</span> fps,Size frameSize,<span class="keyword">bool</span> 	isColor = <span class="literal">true</span> )  <span class="comment">// isColor</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cv2.VideoWriter(filename, fourcc, fps, frameSize[, isColor])</span><br><span class="line">cv.VideoWriter(filename, apiPreference, fourcc, fps, frameSize[, isColor])</span><br></pre></td></tr></table></figure>
+<p>写入视频需要指定视频的==帧率fps== , ==帧尺寸framesize== ,==编码格式fourcc==</p>
+<p>framesize的大小应该与写入的每一帧图像尺寸大小一致</p>
+<p>输出文件类型要与编码类型一致</p>
+<p>几种常用视频编解码器 </p>
+<p>生成文件占用空间最小的编码方式是MPEG-4.2 。在VideoWriter类的构造函数参数为CV_FOURCC(‘M’, ‘P’, ‘4’, ‘2’) 。</p>
+<p>最大的是MPEG-1，对应在VideoWriter类的构造函数参数为CV_FOURCC(‘P’,’I’,’M’,’1’) ，所占磁盘空间是前者的5.7倍。</p>
+<p>fourcc定义</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> cv::VideoWriter::fourcc(<span class="keyword">char</span> c1,<span class="keyword">char</span> c2,<span class="keyword">char</span> c3,<span class="keyword">char</span> c4 )</span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retval  =  cv2.VideoWriter_fourcc(  c1, c2, c3, c4  )</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cv2.VideoWriter_fourcc(<span class="string">'m'</span>,<span class="string">'p'</span>,<span class="string">'a'</span>,<span class="string">'v'</span>) AVI或者mp4文件 </span><br><span class="line">cv2.VideoWriter_fourcc(<span class="string">'M'</span>,<span class="string">'J'</span>,<span class="string">'P'</span>,<span class="string">'G'</span>) avi或者mp4 motion-jpeg编码</span><br><span class="line">cv2.VideoWriter_fourcc(<span class="string">'P'</span>,<span class="string">'I'</span>,<span class="string">'M'</span>,<span class="string">'I'</span>) MPEG<span class="number">-1</span>编码 AVI文件</span><br><span class="line">cv2.VideoWriter_fourcc(<span class="string">'X'</span>,<span class="string">'V'</span>,<span class="string">'I'</span>,<span class="string">'D'</span>) MPEG<span class="number">-4</span>编码 AVI文件</span><br><span class="line">cv2.VideoWriter_fourcc(<span class="string">'T'</span>,<span class="string">'H'</span>,<span class="string">'E'</span>,<span class="string">'O'</span>)  Ogg Vorbis 后缀名 ogv</span><br><span class="line">cv2.VideoWriter_fourcc(<span class="string">'F'</span>,<span class="string">'L'</span>,<span class="string">'V'</span>,<span class="string">'1'</span>)  flash视频，后缀名 flv</span><br></pre></td></tr></table></figure>
+<p>c++创建writer对象和写入图像帧有两种方式</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv2/video.hpp&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//方法1  定义对象，然后使用open方法开启  opencv2/videoio.hpp定义了fourcc</span></span><br><span class="line">	VideoWriter out;</span><br><span class="line">	<span class="keyword">int</span> fourcc = out.fourcc(<span class="string">'M'</span>, <span class="string">'J'</span>,<span class="string">'P'</span>, <span class="string">'G'</span>);</span><br><span class="line">	out.open(<span class="string">"video.mp4"</span>, fourcc, <span class="number">30.0</span>, cv::Size(<span class="number">640</span>, <span class="number">480</span>), <span class="comment">// 单帧图片分辨率为 640x480</span></span><br><span class="line">	<span class="literal">true</span> <span class="comment">// 只输入彩色图</span></span><br><span class="line">	);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 方法2  构造函数*/</span>  </span><br><span class="line">   <span class="function">VideoWriter <span class="title">out</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">       <span class="keyword">const</span> <span class="built_in">string</span>&amp; filename, <span class="comment">// 输入文件名</span></span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">int</span> fourcc, <span class="comment">// 编码形式，</span></span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">double</span> fps, <span class="comment">// 输出视频帧率</span></span></span></span><br><span class="line"><span class="function"><span class="params">		cv::Size frame_size, <span class="comment">// 单帧图片的大小</span></span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">bool</span> is_color = <span class="literal">true</span> <span class="comment">// 如果是false,可传入灰度图像 </span></span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>python将文件夹中所有图片写入视频</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">im_dir = <span class="string">'det'</span>  <span class="comment">#图片路径</span></span><br><span class="line">video_dir = <span class="string">'out4.avi'</span> <span class="comment">#输出视频路径</span></span><br><span class="line">fps = <span class="number">23.977</span> <span class="comment">#输出视频路径</span></span><br><span class="line"><span class="comment">#图片数 </span></span><br><span class="line">num = <span class="number">888</span></span><br><span class="line">img_size = (<span class="number">500</span>,<span class="number">300</span>)</span><br><span class="line"><span class="comment">#fourcc = cv2.cv.CV_FOURCC('M','J','P','G')#opencv2.4</span></span><br><span class="line">fourcc = cv2.VideoWriter_fourcc(<span class="string">'M'</span>,<span class="string">'J'</span>,<span class="string">'P'</span>,<span class="string">'G'</span>) <span class="comment">#opencv3.0之后的写法</span></span><br><span class="line">videoWriter = cv2.VideoWriter(video_dir, fourcc, fps, img_size) <span class="comment">#定义视频写入类</span></span><br><span class="line"></span><br><span class="line">pics = os.listdir(im_dir)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(num):</span><br><span class="line">    im_name = os.path.join(im_dir, str(i)+<span class="string">'.jpg'</span>)</span><br><span class="line">    frame = cv2.imread(im_name)</span><br><span class="line">    <span class="keyword">if</span> type(frame) != <span class="literal">None</span>:</span><br><span class="line">        videoWriter.write(frame) <span class="comment">#写入帧</span></span><br><span class="line"></span><br><span class="line">videoWriter.release()</span><br><span class="line"><span class="keyword">print</span> (<span class="string">'finish'</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="显示窗口Windows"><a href="#显示窗口Windows" class="headerlink" title="显示窗口Windows"></a>显示窗口Windows</h1><p>可以自定义窗口显示图像的模式</p>
+<h2 id="窗口函数"><a href="#窗口函数" class="headerlink" title="窗口函数"></a>窗口函数</h2><p>[官方文档][<a href="https://docs.opencv.org/4.0.0/d7/dfc/group__highgui.html#ggabf7d2c5625bc59ac130287f925557ac3acf621ace7a54954cbac01df27e47228f]" target="_blank" rel="noopener">https://docs.opencv.org/4.0.0/d7/dfc/group__highgui.html#ggabf7d2c5625bc59ac130287f925557ac3acf621ace7a54954cbac01df27e47228f]</a></p>
+<p>==函数原型==   void nameWindow(const string&amp; winname,int flags = WINDOW_AUTOSIZE) ;第一个参数是窗口名字，第二个是显示模式，flag <del>默认值</del> 是window_autosize</p>
+<center>居中</center>
+
+<ol>
+<li>WINDOW_AUTOSIZE 窗口大小自动适应图片大小，并且不可手动更改</li>
+<li>WINDOW_NORMAL 用户可以改变这个窗口大小</li>
+<li>WINDOW_OPENGL 窗口创建的时候会支持OpenGL ,且可以更改窗口大小</li>
+</ol>
+<p>定义窗口名称，imshow时可以指定让图像在该窗口显示</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">namedWindow(<span class="string">"input"</span>, WINDOW_AUTOSIZE);</span><br><span class="line">imshow(<span class="string">"input"</span>, src);</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cv2.namedWindow(<span class="string">"input"</span>, cv2.WINDOW_AUTOSIZE)</span><br><span class="line">cv2.imshow(<span class="string">"input"</span>, src)</span><br></pre></td></tr></table></figure>
+<h2 id="一个窗口显示多张图片"><a href="#一个窗口显示多张图片" class="headerlink" title="一个窗口显示多张图片"></a>一个窗口显示多张图片</h2><p>另一种方法是matplotlib</p>
+<p>OpenCV一个窗口只能显示一张图片。但可以通过组合多张图，实现多张图在一个窗口的视觉效果。</p>
+<h3 id="Python-numpy组合"><a href="#Python-numpy组合" class="headerlink" title="Python  numpy组合"></a>Python  numpy组合</h3><p>用np.hstack或者np.vstack组合矩阵  ==若是要让各个图片之间显示间隔，可以插入0或255的列做间隔==</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#图1</span></span><br><span class="line">img = cv2.imread(<span class="string">r'C:\Users\muyi\Pictures\pic\489321.jpg'</span>)</span><br><span class="line"><span class="comment">#图2</span></span><br><span class="line">img2 = cv2.imread(<span class="string">r'C:\Users\muyi\Pictures\pic\489323.jpg'</span>)</span><br><span class="line"><span class="comment">#图集</span></span><br><span class="line">imgs = np.hstack([img,img2])</span><br><span class="line"><span class="comment">#展示多个</span></span><br><span class="line">cv2.imshow(<span class="string">"mutil_pic"</span>, imgs)</span><br><span class="line"><span class="comment">#等待关闭</span></span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/10.png" alt="1559227778334"></p>
+<p>==OpenCV一个窗口显示多个图片的注意事项==：</p>
+<p>读入的多个图片必须具有==相同的尺寸、通道数==。若是彩图、灰度图同时显示，会出现窗口黑屏现象</p>
+<h3 id="matplotlib划分窗口显示多张图："><a href="#matplotlib划分窗口显示多张图：" class="headerlink" title="matplotlib划分窗口显示多张图："></a>matplotlib划分窗口显示多张图：</h3><p>利用 plt.subplot(m,n,k)划分窗口即可，类似matlab的绘图，而且各个窗口可以显示不同格式的图像</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/opencv/" rel="tag"># opencv</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/09/笔记(零) - vs2015配置opencv4.0.0/" rel="next" title="vs2015配置opencv">
+                <i class="fa fa-chevron-left"></i> vs2015配置opencv
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/09/笔记(二) -颜色空间转换和伪彩色/" rel="prev" title="opencv笔记（二）颜色空间转换与伪彩色">
+                opencv笔记（二）颜色空间转换与伪彩色 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.gif" alt="muyiyiyi">
+            
+              <p class="site-author-name" itemprop="name">muyiyiyi</p>
+              <div class="site-description motion-element" itemprop="description">世间好物不监牢,彩云易散琉璃脆.</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/muyiyiyi" title="GitHub &rarr; https://github.com/muyiyiyi" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:xnjd1998@gmail.com" title="E-Mail &rarr; mailto:xnjd1998@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读取图片"><span class="nav-number">1.</span> <span class="nav-text">读取图片</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#imread方法"><span class="nav-number">1.1.</span> <span class="nav-text">imread方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图片读取出错处理"><span class="nav-number">1.2.</span> <span class="nav-text">图片读取出错处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取的图片属性"><span class="nav-number">1.3.</span> <span class="nav-text">读取的图片属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写入图片"><span class="nav-number">2.</span> <span class="nav-text">写入图片</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#imwrite方法"><span class="nav-number">2.1.</span> <span class="nav-text">imwrite方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#带透明度的png图像"><span class="nav-number">2.2.</span> <span class="nav-text">带透明度的png图像</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#读取视频"><span class="nav-number">3.</span> <span class="nav-text">读取视频</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#capture结构体"><span class="nav-number">3.1.</span> <span class="nav-text">capture结构体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下一帧与释放"><span class="nav-number">3.2.</span> <span class="nav-text">下一帧与释放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取视频属性-get-方法"><span class="nav-number">3.3.</span> <span class="nav-text">读取视频属性 get()方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写入视频"><span class="nav-number">4.</span> <span class="nav-text">写入视频</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#VideoWriter类"><span class="nav-number">4.1.</span> <span class="nav-text">VideoWriter类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#显示窗口Windows"><span class="nav-number">5.</span> <span class="nav-text">显示窗口Windows</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口函数"><span class="nav-number">5.1.</span> <span class="nav-text">窗口函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个窗口显示多张图片"><span class="nav-number">5.2.</span> <span class="nav-text">一个窗口显示多张图片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Python-numpy组合"><span class="nav-number">5.2.1.</span> <span class="nav-text">Python  numpy组合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#matplotlib划分窗口显示多张图："><span class="nav-number">5.2.2.</span> <span class="nav-text">matplotlib划分窗口显示多张图：</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">muyiyiyi</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+      
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@1/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- LOCAL: You can save these files to your site and update links -->
+
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/gitmint.browser.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/default.css">
+<!-- END LOCAL -->
+
+<script>
+  function renderGitment() {
+    var gitment = new Gitmint({
+      id: window.location.pathname,
+      owner: '',
+      repo: '',
+      
+        lang: '' || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+      
+      oauth: {
+      
+      
+        client_secret: '3a0953e937733b3a09439015b2818d5e2792ba55',
+      
+        client_id: '3abb63cba9c20445c38a'
+      }
+    });
+    gitment.render('gitment-container');
+  }
+
+  
+    renderGitment();
+  
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .done(function() {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.time + 1);
+              })
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1 }))
+                .done(function() {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function() {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+        .fail(function ({ responseJSON }) {
+          console.log('LeanCloud Counter Error: ' + responseJSON.code + ' ' + responseJSON.error);
+        });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + '2UlWyYjtmv8YANfeWcTvSgwC-gzGzoHsz')
+        .done(function({ api_server }) {
+          var Counter = function(method, url, data) {
+            return $.ajax({
+              method: method,
+              url: 'https://' + api_server + '/1.1' + url,
+              headers: {
+                'X-LC-Id': '2UlWyYjtmv8YANfeWcTvSgwC-gzGzoHsz',
+                'X-LC-Key': 'nv8p9lx5owfR6qcaGjjSM428',
+                'Content-Type': 'application/json',
+              },
+              data: data
+            });
+          };
+          
+            addCount(Counter);
+          
+        });
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
